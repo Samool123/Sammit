@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Sammit — Poll-first social media</title>
+  <meta name="description" content="    Sammit: real‑time, poll‑driven, and built for independent voices.” Try a live poll demo." />
+  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark light" />
+  <meta property="og:title" content="Sammit — Poll-first social media" />
+  <meta property="og:description" content="A modern social platform built around polls. Create, vote, discuss. Try the live demo poll." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://dummyimage.com/1200x630/000/fff&text=Sammit" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="logo.png" />
+  <style>
+    :root {
+      --bg: #000;
+      --surface: #0b0b0b;
+      --muted: #8b8b8b;
+      --text: #eaeaea;
+      --primary: #1d9bf0; /* X blue */
+      --primary-2: #1580c9;
+      --accent: #10b981; /* emerald for success */
+      --danger: #ef4444;
+      --border: #1f1f1f;
+      --focus: 2px solid #1d9bf0;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --shadow-1: 0 10px 30px rgba(0,0,0,0.45);
+      --shadow-2: 0 30px 80px rgba(0,0,0,0.6);
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji;
+    }
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #fff; --surface: #f7f7f7; --text: #0a0a0a; --muted: #4a4a4a; --border: #e7e7e7; --shadow-1: 0 10px 30px rgba(0,0,0,0.08); --shadow-2: 0 30px 80px rgba(0,0,0,0.1); }
+    }
+    * { box-sizing: border-box }
+    html, body { height: 100% }
+    body {
+      margin: 0;
+      background: radial-gradient(1000px 500px at 80% -10%, rgba(29,155,240,0.12), transparent 60%),
+                  radial-gradient(800px 400px at 10% -10%, rgba(29,155,240,0.08), transparent 50%),
+                  var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+    a { color: var(--text); text-decoration: none }
+    a:hover { text-decoration: underline }
+    .container { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 20px }
+    header {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: saturate(140%) blur(10px);
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0;
+    }
+    .logo {
+      display: inline-flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: 0.2px;
+    }
+    .logo-mark {
+      width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+      background: conic-gradient(from 210deg at 50% 50%, #1d9bf0, #0ea5e9, #1d9bf0);
+      color: #fff; font-weight: 900; box-shadow: var(--shadow-1);
+    }
+    .nav-links { display: flex; gap: 16px; align-items: center }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--primary); color: #fff; border: 0; padding: 10px 16px;
+      border-radius: 999px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-1);
+    }
+    .btn:hover { background: var(--primary-2) }
+    .btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); box-shadow: none }
+    .btn.ghost { background: transparent; color: var(--text); padding: 8px 12px; border: 0 }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .hero {
+      padding: 64px 0 24px;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: center;
+    }
+    @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr } }
+    .headline {
+      font-size: clamp(32px, 6vw, 60px); line-height: 1.05; font-weight: 900; letter-spacing: -0.5px;
+    }
+    .subhead {
+      margin-top: 16px; color: var(--muted); font-size: clamp(16px, 2.5vw, 20px);
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px }
+    .card {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, transparent), color-mix(in srgb, var(--surface) 96%, transparent));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-2);
+    }
+    .device {
+      aspect-ratio: 16/10;
+      overflow: hidden; position: relative;
+    }
+    .device::after {
+      content: ""; inset: 0; position: absolute;
+      background: radial-gradient(800px 300px at 20% 0%, rgba(29,155,240,0.18), transparent 60%);
+      pointer-events: none;
+    }
+    .feed {
+      height: 100%; display: grid; grid-template-rows: auto 1fr; overflow: hidden;
+    }
+    .feed-header {
+      padding: 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;
+      position: sticky; top: 0; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(6px);
+    }
+    .feed-body { overflow: auto; padding: 14px }
+    .post {
+      border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+    }
+    .post-meta { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; margin-bottom: 6px }
+    .avatar { width: 28px; height: 28px; border-radius: 50%; background: #222 }
+    .poll {
+      margin-top: 10px; display: grid; gap: 8px;
+    }
+    .poll-option {
+      border: 1px solid var(--border); border-radius: 999px; padding: 10px 14px;
+      display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+      cursor: pointer; position: relative; overflow: hidden;
+      background: linear-gradient(0deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
+    .poll-option[data-selected="true"] { border-color: color-mix(in srgb, var(--primary) 80%, var(--border)); }
+    .bar {
+      position: absolute; inset: 0; border-radius: 999px; background: color-mix(in srgb, var(--primary) 20%, transparent);
+      transform: scaleX(0); transform-origin: left; transition: transform 400ms cubic-bezier(.2,.7,.2,1);
+      z-index: 0;
+    }
+    .percent, .option-label { position: relative; z-index: 1 }
+    .percent { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .poll-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; color: var(--muted); font-size: 13px }
+    .tiny { font-size: 12px; color: var(--muted) }
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border);
+      padding: 6px 10px; border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--surface) 90%, transparent);
+    }
+    .section { padding: 64px 0 }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px }
+    @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr } }
+    .feature {
+      padding: 18px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 92%, transparent);
+    }
+    .feature h3 { margin: 0 0 6px; font-size: 18px }
+    .muted { color: var(--muted) }
+    .highlight { color: var(--primary) }
+    .timeline { border-left: 2px dashed color-mix(in srgb, var(--muted) 50%, transparent); padding-left: 16px; display: grid; gap: 10px }
+    .milestone { position: relative; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--surface) 92%, transparent) }
+    .milestone::before {
+      content: ""; position: absolute; left: -10px; top: 14px; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--primary);
+    }
+    .about {
+      display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: center;
+    }
+    @media (max-width: 680px) { .about { grid-template-columns: 1fr } }
+    .about .avatar-xl {
+      width: 120px; height: 120px; border-radius: 24px; background:
+      radial-gradient(80px 60px at 30% 30%, rgba(255,255,255,0.12), transparent 60%), #222;
+      border: 1px solid var(--border);
+    }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; border: 1px solid var(--border); border-bottom-width: 2px; padding: 2px 6px; border-radius: 6px; background: color-mix(in srgb, var(--surface) 90%, transparent); color: var(--muted) }
+    .footer {
+      border-top: 1px solid var(--border); padding: 28px 0; color: var(--muted); font-size: 14px;
+    }
+    .tag { font-size: 12px; color: var(--muted); border: 1px dashed var(--border); padding: 4px 8px; border-radius: 999px }
+    .input, select, textarea {
+      width: 100%; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 96%, transparent);
+      color: var(--text); padding: 12px 14px; border-radius: 12px; outline: none;
+    }
+    .input:focus, select:focus, textarea:focus, .btn:focus, .poll-option:focus { outline: var(--focus); outline-offset: 2px }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+    @media (max-width: 760px) { .row { grid-template-columns: 1fr } }
+    .note { border-left: 3px solid var(--primary); padding: 8px 12px; background: color-mix(in srgb, var(--surface) 90%, transparent); border-radius: 10px }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
+      background: color-mix(in srgb, var(--primary) 18%, transparent); color: #cfeaff; font-weight: 600; border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+    }
+    .spacer { height: 24px }
+    .divider { height: 1px; background: var(--border); margin: 16px 0 }
+    .hidden { display: none !important }
+    /* Tiny icons via currentColor stroke */
+    .i { width: 18px; height: 18px; display: inline-block; vertical-align: middle }
+    .center { text-align: center }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+<header role="banner">
+  <div class="container nav">
+    <a href="#top" class="logo" aria-label="Sammit home">
+      <img src="logo.png" alt="Sammit logo" style="height:34px; width:auto; border-radius:6px;" />
+      <span>Sammit</span>
+      <span class="tag">Poll-first social</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="btn ghost" href="#features">Features</a>
+      <a class="btn ghost" href="#how">How it works</a>
+      <a class="btn ghost" href="#demo">Live demo</a>
+      <a class="btn ghost" href="#roadmap">Roadmap</a>
+      <a class="btn secondary" href="#signup">Get updates</a>
+      <button class="btn" id="openCreatePoll" aria-haspopup="dialog" aria-controls="createPollDialog">Create test poll</button>
+    </nav>
+  </div>
+</header>
+
+  <!-- Hero -->
+  <main id="top" class="hero">
+    <div class="container hero-grid">
+      <div>
+        <h1 class="headline">The social network where polls lead the conversation.</h1>
+        <p class="subhead">Sammit is a fast, Real-Time platform centered on polls: ask, vote, discuss, and see the world’s opinion in real time.</p>
+        <div class="cta-row">
+          <a class="btn" href="#demo">Try a live poll</a>
+          <a class="btn secondary" href="#roadmap">Early 2026 release</a>
+        </div>
+        <div class="spacer"></div>
+        <div class="note">
+          Built by <strong>Sam Harris</strong>. Aimed to be launching to the public in <strong>Early 2026   
+        </div>
+      </div>
+      <div class="card device" aria-hidden="true">
+        <div class="feed">
+          <div class="feed-header">
+            <span class="badge">
+              <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M12 3v18M3 12h18"/></svg>
+              Poll-first
+            </span>
+            <span class="chip">Real-time results</span>
+          </div>
+          <div class="feed-body" id="mockFeed">
+            <div class="post">
+              <div class="post-meta"><div class="avatar"></div> @sammit • 1m • Poll</div>
+              <div>Which feature should we prioritize next?</div>
+              <div class="poll" data-demo="feed">
+                <button class="poll-option"><div class="bar"></div><span class="option-label">Poll scheduling</span><span class="percent">—</span></button>
+                <button class="poll-option"><div class="bar"></div><span class="option-label">Followed topics</span><span class="percent">—</span></button>
+                <button class="poll-option"><div class="bar"></div><span class="option-label">Advanced insights</span><span class="percent">—</span></button>
+              </div>
+              <div class="poll-actions"><span>Vote to reveal results</span><span>Ends in 22h</span></div>
+            </div>
+            <div class="post">
+              <div class="post-meta"><div class="avatar"></div> @creator • 12m • Poll</div>
+              <div>Who's gonna win the showdown?</div>
+              <div class="poll" data-demo="feed-2">
+                <button class="poll-option"><div class="bar"></div><span class="option-label">Crows</span><span class="percent">—</span></button>
+                <button class="poll-option"><div class="bar"></div><span class="option-label">Port</span><span class="percent">—</span></button>
+              </div>
+              <div class="poll-actions"><span>2 choices • 24h</span><span>Tap to vote</span></div>
+            </div>
+            <div class="post">
+              <div class="post-meta"><div class="avatar"></div> @news • 35m • Poll</div>
+              <div>Who are you planning on voting in the upcoming election?</div>
+              <div class="poll" data-demo="feed-3">
+                <button class="poll-option"><div class="bar"></div><span class="option-label">Anthony Albanese</span><span class="percent">—</span></button>
+                <button class="poll-option"><div class="bar"></div><span class="option-label">Scott Morrison</span><span class="percent">—</span></button>
+              </div>
+              <div class="poll-actions"><span>Closes soon</span><span>Join in</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Features -->
+  <section id="features" class="section">
+    <div class="container">
+      <h2>Why Sammit</h2>
+      <p class="muted">Every post can be a poll. Your feed becomes a living map of opinions — fast, real, and remixable.</p>
+      <div class="grid-3">
+        <div class="feature">
+          <h3>Real-time results</h3>
+          <p>Watch percentages shift live as votes roll in. Vote to unlock insights and trend lines.</p>
+        </div>
+        <div class="feature">
+          <h3>Discussion-native</h3>
+          <p>Polls anchor the conversation. Replies, quotes, and follow-up polls keep nuance front and center.</p>
+        </div>
+        <div class="feature">
+          <h3>Signal over noise</h3>
+          <p>Algorithms highlight statistically meaningful shifts, not just loudest voices.</p>
+        </div>
+        <div class="feature">
+          <h3>Creator tools</h3>
+          <p>Schedule polls, target by interest, export anonymized results, and build recurring series.</p>
+        </div>
+        <div class="feature">
+          <h3>Privacy by design</h3>
+          <p>Votes are anonymous by default with transparent controls for what’s shared.</p>
+        </div>
+        <div class="feature">
+          <h3>Open graph</h3>
+          <p>Embed Sammit polls anywhere. Portable, interactive, and fast.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how" class="section">
+    <div class="container">
+      <h2>How it works</h2>
+      <div class="row">
+        <div class="feature">
+          <h3>1. Create</h3>
+          <p>Write a question, add up to 6 options, set duration, and hit publish. It lands in your followers’ feeds.</p>
+        </div>
+        <div class="feature">
+          <h3>2. Vote</h3>
+          <p>Tap your choice. See instant results and join the thread to explain your take — or challenge it.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="feature">
+          <h3>3. Analyze</h3>
+          <p>Unlock breakdowns over time, demographics (opt-in), and correlated polls. Spot shifts as they happen.</p>
+        </div>
+        <div class="feature">
+          <h3>4. Remix</h3>
+          <p>Quote a poll, branch it, or run a follow-up with new context. Polls evolve as conversations do.</p>
+        </div>
+      </div>
+      <p class="tiny">Tip: Press <span class="kbd">/</span> to jump to the live demo poll quickly.</p>
+    </div>
+  </section>
+
+  <!-- Live Demo -->
+  <section id="demo" class="section">
+    <div class="container">
+      <h2>Live demo poll</h2>
+      <p class="muted">Vote below to reveal results. This demo runs entirely in your browser and saves your vote locally.</p>
+      <div class="row">
+        <div class="card" style="padding:18px">
+          <div class="post" style="margin:0">
+            <div class="post-meta"><div class="avatar"></div> @sammit • Demo • Poll</div>
+            <div id="demoQuestion" style="font-size:18px; font-weight:600; margin-bottom:8px">Which core value should define Sammit at launch?</div>
+            <div class="poll" id="demoPoll" aria-label="Demo poll">
+              <!-- Options dynamically injected -->
+            </div>
+            <div class="poll-actions">
+              <span id="demoMeta">Ends in 2d • Anonymous</span>
+              <div>
+                <button class="btn secondary" id="changeVoteBtn" aria-describedby="changeVoteHint">Change vote</button>
+                <button class="btn secondary" id="resetPollBtn" title="Clears your local vote and results">Reset</button>
+              </div>
+            </div>
+            <p id="changeVoteHint" class="tiny">You can change your vote once. Reset clears local data.</p>
+          </div>
+        </div>
+        <div class="card" style="padding:18px">
+          <h3 style="margin-top:0">Create a test poll</h3>
+          <p class="muted">Try crafting your own poll. It will load into the demo on the left.</p>
+          <form id="quickCreate">
+            <label for="q" class="tiny">Question</label>
+            <input class="input" id="q" name="q" maxlength="140" placeholder="What should we launch first?" required />
+            <div class="divider"></div>
+            <div id="optFields">
+              <div class="row">
+                <div>
+                  <label class="tiny" for="o1">Option 1</label>
+                  <input class="input" id="o1" name="o1" maxlength="40" placeholder="Option 1" required />
+                </div>
+                <div>
+                  <label class="tiny" for="o2">Option 2</label>
+                  <input class="input" id="o2" name="o2" maxlength="40" placeholder="Option 2" required />
+                </div>
+              </div>
+              <div class="row">
+                <div>
+                  <label class="tiny" for="o3">Option 3 (optional)</label>
+                  <input class="input" id="o3" name="o3" maxlength="40" placeholder="Option 3" />
+                </div>
+                <div>
+                  <label class="tiny" for="o4">Option 4 (optional)</label>
+                  <input class="input" id="o4" name="o4" maxlength="40" placeholder="Option 4" />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label class="tiny" for="duration">Duration</label>
+                <select id="duration" class="input">
+                  <option value="3600">1 hour</option>
+                  <option value="86400" selected>1 day</option>
+                  <option value="172800">2 days</option>
+                  <option value="604800">7 days</option>
+                </select>
+              </div>
+              <div>
+                <label class="tiny" for="visibility">Results visibility</label>
+                <select id="visibility" class="input">
+                  <option value="after">After vote (default)</option>
+                  <option value="always">Always visible</option>
+                  <option value="closed">Only after close</option>
+                </select>
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn" type="submit">Load into demo</button>
+            <span class="tiny" style="margin-left:10px">Everything is local to your browser.</span>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap -->
+  <section id="roadmap" class="section">
+    <div class="container">
+      <h2>Roadmap to Early 2026</h2>
+      <div class="timeline">
+        <div class="milestone">
+          <strong>Now — Prototype & community feedback</strong>
+          <p class="muted">Validate core flows: creation, voting, discussion. Iterate on signal quality and feed integrity.</p>
+        </div>
+        <div class="milestone">
+          <strong>Late 2025 — Private beta</strong>
+          <p class="muted">Invite-first testing, creator tooling, API for embeds, moderation and safety layers.</p>
+        </div>
+        <div class="milestone">
+          <strong>Early 2026 — Public launch</strong>
+          <p class="muted">Open access, real-time analytics, topic graphs, and growth loops built around meaningful polls.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2>Who’s building Sammit</h2>
+      <div class="about card" style="padding:18px">
+        <div class="avatar-xl" aria-hidden="true"></div>
+        <div>
+          <p><strong>Sam Harris</strong> is building Sammit: a poll-first social platform that treats opinions like data — with context, humility, and room to change.</p>
+          <p class="muted">If social media is a giant conversation, Sammit turns it into a living experiment: ask better questions, learn faster, and course-correct in public.</p>
+          <div class="spacer"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- Signup -->
+<section id="signup" class="section">
+  <div class="container">
+    <h2>Be first to know</h2>
+    <p class="muted">Curious about how development’s progressing? Feel free to DM me on Discord</p>
+    <div class="row">
+      <div class="card" style="padding:18px">
+        <form id="signupForm" novalidate>
+          <label for="discordHandle" class="tiny">Discord</label>
+          <input
+            class="input no-select"
+            id="discordHandle"
+            type="text"
+            value="samuel_787"
+            readonly
+            onmousedown="return false"
+          />
+          <div class="spacer"></div>
+          <button class="btn" type="button" onclick="copyDiscordHandle()">Copy Handle</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Toast Notification -->
+<!-- Toast Notification -->
+<div id="toast" class="toast">Contact Info added to clipboard</div>
+
+<style>
+  .toast {
+    position: fixed;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.95);
+    background: rgba(20, 20, 20, 0.85); /* Faded dark tone */
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: top 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+    z-index: 9999;
+  }
+
+  .toast.show {
+    top: 20px;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+</style>
+
+<script>
+  function copyDiscordHandle() {
+    const handle = document.getElementById("discordHandle").value;
+    navigator.clipboard.writeText(handle).then(() => {
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }).catch(err => {
+      console.error("Failed to copy: ", err);
+    });
+  }
+</script>
+
+
+
+  <script>
+    // Utility: simple store in localStorage
+    const store = {
+      get(key, fallback) {
+        try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+        catch { return fallback; }
+      },
+      set(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+      },
+      del(key) { try { localStorage.removeItem(key) } catch {} }
+    };
+
+    // Demo Poll State
+    const DEMO_KEY = 'sammit_demo_poll_v1';
+    const DEFAULT_POLL = {
+      id: 'demo',
+      question: 'Which core value should define Sammit at launch?',
+      options: ['Speed', 'Clarity', 'Civility', 'Insight'],
+      votes: [0, 0, 0, 0],
+      createdAt: Date.now(),
+      durationSec: 172800, // 2 days
+      visibility: 'after', // 'after' | 'always' | 'closed'
+      userVote: null,
+      allowChangeOnce: true,
+      changedOnce: false
+    };
+
+    function loadPoll() {
+      let p = store.get(DEMO_KEY, null);
+      if (!p) { store.set(DEMO_KEY, DEFAULT_POLL); p = structuredClone(DEFAULT_POLL); }
+      // guard against schema changes
+      p.options = p.options.slice(0, 6); // max 6
+      p.votes = Array.from({length: p.options.length}, (_, i) => p.votes[i] || 0);
+      return p;
+    }
+
+    let poll = loadPoll();
+
+    // DOM refs
+    const demoPollEl = document.getElementById('demoPoll');
+    const demoQuestionEl = document.getElementById('demoQuestion');
+    const changeVoteBtn = document.getElementById('changeVoteBtn');
+    const resetPollBtn = document.getElementById('resetPollBtn');
+    const demoMetaEl = document.getElementById('demoMeta');
+
+    function timeLeft(p) {
+      const left = (p.createdAt + p.durationSec * 1000) - Date.now();
+      if (left <= 0) return 'Closed';
+      const sec = Math.round(left / 1000);
+      if (sec < 60) return sec + 's left';
+      const min = Math.round(sec / 60);
+      if (min < 60) return min + 'm left';
+      const hr = Math.round(min / 60);
+      if (hr < 48) return hr + 'h left';
+      const day = Math.round(hr / 24);
+      return day + 'd left';
+    }
+
+    function totalVotes(p) { return p.votes.reduce((a,b) => a + b, 0); }
+
+    function canShowResults(p) {
+      if (p.visibility === 'always') return true;
+      if (p.visibility === 'after') return p.userVote !== null;
+      if (p.visibility === 'closed') return (p.createdAt + p.durationSec*1000) <= Date.now();
+      return true;
+    }
+
+    function renderPoll() {
+      demoQuestionEl.textContent = poll.question;
+      demoMetaEl.textContent = (timeLeft(poll) === 'Closed' ? 'Poll closed' : `${timeLeft(poll)} • Anonymous`);
+      demoPollEl.innerHTML = '';
+      const show = canShowResults(poll);
+      const total = Math.max(1, totalVotes(poll)); // avoid divide by zero
+
+      poll.options.forEach((label, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'poll-option';
+        btn.setAttribute('role', 'button');
+        btn.setAttribute('aria-pressed', poll.userVote === idx ? 'true' : 'false');
+        btn.dataset.index = idx;
+        if (poll.userVote === idx) btn.dataset.selected = 'true';
+
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        const pct = Math.round((poll.votes[idx] / total) * 100);
+
+        // Bar animation transform based on visibility
+        if (show) {
+          requestAnimationFrame(() => {
+            bar.style.transform = `scaleX(${pct/100})`;
+            bar.style.background = poll.userVote === idx
+              ? 'color-mix(in srgb, var(--primary) 28%, transparent)'
+              : 'color-mix(in srgb, var(--primary) 16%, transparent)';
+          });
+        } else {
+          bar.style.transform = 'scaleX(0)';
+        }
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'option-label';
+        labelSpan.textContent = label;
+
+        const percentSpan = document.createElement('span');
+        percentSpan.className = 'percent';
+        percentSpan.textContent = show ? `${pct}%` : 'Tap to vote';
+
+        btn.appendChild(bar);
+        btn.appendChild(labelSpan);
+        btn.appendChild(percentSpan);
+
+        btn.addEventListener('click', () => onVote(idx));
+        btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onVote(idx); }});
+        demoPollEl.appendChild(btn);
+      });
+
+      changeVoteBtn.disabled = !(poll.allowChangeOnce && poll.userVote !== null && !poll.changedOnce);
+    }
+
+    function onVote(index) {
+      const closed = (poll.createdAt + poll.durationSec * 1000) <= Date.now();
+      if (closed) { toast('Poll is closed.'); return; }
+      if (poll.userVote === null) {
+        poll.userVote = index;
+        poll.votes[index] += 1;
+      } else if (poll.allowChangeOnce && !poll.changedOnce) {
+        // Move one vote
+        poll.votes[poll.userVote] = Math.max(0, poll.votes[poll.userVote] - 1);
+        poll.votes[index] += 1;
+        poll.userVote = index;
+        poll.changedOnce = true;
+      } else {
+        toast('You have already voted.');
+        return;
+      }
+      store.set(DEMO_KEY, poll);
+      renderPoll();
+    }
+
+    changeVoteBtn.addEventListener('click', () => {
+      if (poll.allowChangeOnce && poll.userVote !== null && !poll.changedOnce) {
+        toast('Change your vote by selecting a different option.');
+      } else {
+        toast('Vote change not available.');
+      }
+    });
+
+    resetPollBtn.addEventListener('click', () => {
+      if (confirm('Reset demo poll? This clears your local vote and results.')) {
+        store.del(DEMO_KEY);
+        poll = loadPoll();
+        renderPoll();
+      }
+    });
+
+    // Quick Create form
+    document.getElementById('quickCreate').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const q = document.getElementById('q').value.trim();
+      const o1 = document.getElementById('o1').value.trim();
+      const o2 = document.getElementById('o2').value.trim();
+      const o3 = document.getElementById('o3').value.trim();
+      const o4 = document.getElementById('o4').value.trim();
+      const duration = parseInt(document.getElementById('duration').value, 10) || 86400;
+      const visibility = document.getElementById('visibility').value;
+
+      const options = [o1, o2, o3, o4].filter(Boolean).slice(0,6);
+      if (!q || options.length < 2) { toast('Enter a question and at least two options.'); return; }
+
+      poll = {
+        id: 'demo',
+        question: q,
+        options,
+        votes: options.map(() => 0),
+        createdAt: Date.now(),
+        durationSec: duration,
+        visibility,
+        userVote: null,
+        allowChangeOnce: true,
+        changedOnce: false
+      };
+      store.set(DEMO_KEY, poll);
+      renderPoll();
+      toast('Loaded your poll into the demo.');
+      document.getElementById('q').value = '';
+      document.getElementById('o1').value = '';
+      document.getElementById('o2').value = '';
+      document.getElementById('o3').value = '';
+      document.getElementById('o4').value = '';
+    });
+
+    // Dialog flow
+    const dialog = document.getElementById('createPollDialog');
+    document.getElementById('openCreatePoll').addEventListener('click', () => {
+      try { dialog.showModal(); } catch { dialog.show(); }
+    });
+    document.getElementById('dialogCreate').addEventListener('click', (e) => {
+      e.preventDefault();
+      const q = document.getElementById('dq').value.trim();
+      const opts = ['da1','da2','da3','da4'].map(id => document.getElementById(id).value.trim()).filter(Boolean);
+      const d = parseInt(document.getElementById('dd').value, 10) || 604800;
+      if (!q || opts.length < 2) { toast('Enter a question and at least two options.'); return; }
+      poll = {
+        id: 'demo',
+        question: q,
+        options: opts.slice(0,6),
+        votes: opts.map(() => 0),
+        createdAt: Date.now(),
+        durationSec: d,
+        visibility: 'after',
+        userVote: null,
+        allowChangeOnce: true,
+        changedOnce: false
+      };
+      store.set(DEMO_KEY, poll);
+      renderPoll();
+      dialog.close();
+      toast('Your test poll is live in the demo.');
+    });
+
+    // Keyboard quick jump to demo
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/') {
+        e.preventDefault();
+        document.getElementById('demo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // Mock feed polls are non-persistent and local only
+    function initMockFeed() {
+      document.querySelectorAll('.poll[data-demo]').forEach((wrap) => {
+        const opts = wrap.querySelectorAll('.poll-option');
+        let voted = false;
+        let counts = Array.from({length: opts.length}, () => 0);
+        opts.forEach((btn, i) => {
+          btn.addEventListener('click', () => {
+            if (!voted) { counts[i]++; voted = true; }
+            const total = counts.reduce((a,b) => a+b, 0) || 1;
+            opts.forEach((b, j) => {
+              const pct = Math.round((counts[j]/total) * 100);
+              b.querySelector('.bar').style.transform = `scaleX(${pct/100})`;
+              b.querySelector('.percent').textContent = `${pct}%`;
+            });
+          });
+        });
+      });
+    }
+
+    // Toast
+    const toast = (() => {
+      let t;
+      return (msg) => {
+        if (t) t.remove();
+        t = document.createElement('div');
+        t.textContent = msg;
+        Object.assign(t.style, {
+          position: 'fixed', left: '50%', bottom: '24px', transform: 'translateX(-50%)',
+          background: 'rgba(20,20,20,0.9)', color: 'white', padding: '10px 14px',
+          borderRadius: '999px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-1)', zIndex: 1000
+        });
+        document.body.appendChild(t);
+        setTimeout(() => { t?.remove(); t = null; }, 2200);
+      };
+    })();
+
+    // Signup fake handler
+    document.getElementById('signupForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const msg = document.getElementById('signupMsg');
+      if (!/^\S+@\S+\.\S+$/.test(email)) { msg.textContent = 'Enter a valid email.'; msg.style.color = 'var(--danger)'; return; }
+      msg.textContent = 'Thanks! You’re on the list.'; msg.style.color = 'var(--accent)';
+      document.getElementById('email').value = '';
+    });
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Init
+    renderPoll();
+    initMockFeed();
+  </script>
+</body>
+</html>
